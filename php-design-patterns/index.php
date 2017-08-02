@@ -1,95 +1,75 @@
 <?php
 
-class LandingSummary {
+interface LoggerInterface {
+    function info($message);
+    function warn($message);
+    function error($message);
+    function debug($message);
+}
 
-    private $topSeries;
-    private $latestVideos;
-    private $latestPosts;
-    private $totalLength;
+class MonologLogger implements LoggerInterface {
 
-    public function __construct(LandingSummaryBuilder $builder) {
-        $this->latestPosts = $builder->getLatestPosts();
-        $this->latestVideos = $builder->getLatestVideos();
-        $this->topSeries = $builder->getTopSeries();
-        $this->totalLength = $builder->getTotalLength();
+    public function info($message) {
+        echo '[INFO] '. $message.PHP_EOL;
+    }
+    public function warn($message) {
+        echo '[WARN] '. $message.PHP_EOL;
+    }
+    public function error($message) {
+        echo '[ERROR] '. $message.PHP_EOL;
+    }
+    public function debug($message) {
+        echo '[DEBUG] '. $message.PHP_EOL;
+    }
+}
+
+interface Log4PHPInterface {
+    public function log($level, $message);
+}
+
+class ApacheLogger implements Log4PHPInterface {
+    public function log($level, $message) {
+        echo '['.$level.'] '. $message.PHP_EOL;
+    }
+}
+
+class CheckoutController {
+
+    private $logger;
+
+    public function __construct(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
-    public function getTopSeries() {
-        return $this->topSeries;
-    }
-
-    public function getTotalLength() {
-        return $this->totalLength;
-    }
-
-    public function getLatestPosts() {
-        return $this->latestPosts;
-    }
-
-    public function getLatestVideos() {
-        return $this->latestVideos;
-    }
-
-    public static function builder() {
-        return new LandingSummaryBuilder();
+    public function checkout($userid) {
+        $this->logger->info('User '. $userid. "# visited checkout page");
     }
 
 }
 
-class LandingSummaryBuilder {
+class MonologLoggerAdapter implements LoggerInterface {
 
-    private $topSeries;
-    private $latestVideos;
-    private $totalLength;
-    private $latestPosts;
+    private $logger;
 
-    public function setTopSeries($topSeries) {
-        $this->topSeries = $topSeries;
-        return $this;
+    public function __construct(\Log4PHPInterface $logger) {
+        $this->logger = $logger;
     }
 
-    public function setLatestVideos($latestVideos) {
-        $this->latestVideos = $latestVideos;
-        return $this;
+    public function info($message) {
+        $this->logger->log('INFO', $message);
     }
 
-    public function setLatestPosts($latestPosts) {
-        $this->latestPosts = $latestPosts;
-        return $this;
+    public function warn($message) {
+        $this->logger->log('WARN', $message);
     }
-
-    public function setTotalLength($totalLength) {
-        $this->totalLength = $totalLength;
-        return $this;
+    public function error($message) {
+        $this->logger->log('ERROR',$message);
     }
-
-    public function getTopSeries() {
-        return $this->topSeries;
-    }
-
-     public function getLatestPosts() {
-        return $this->latestPosts;
-    }
-
-    public function getLatestVideos() {
-        return $this->latestVideos;
-    }
-
-    public function getTotalLength() {
-        return $this->totalLength;
-    }
-
-    public function build() {
-        return new LandingSummary($this);
+    public function debug($message) {
+        $this->logger->log('DEBUG',$message);
     }
 
 }
 
-$landingSummary = LandingSummary::builder()
-    ->setTotalLength("totalLength")
-    ->setTopSeries("topSeries")
-    ->setLatestPosts("latestPosts")
-    ->setLatestVideos("latestVideos")
-    ->build();
-
-var_dump($landingSummary);
+$controller = new CheckoutController(new MonologLogger());
+$controller->checkout(5);
