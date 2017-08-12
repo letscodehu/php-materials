@@ -17,7 +17,7 @@ class Tag extends Model {
     public $timestamps = null;
 
     public function posts() {
-        return $this->belongsTo(Post::class, "post_id", "id", Tag::class);
+        return $this->belongsToMany(Post::class,"blog_post_to_tag", "tag_id", "post_id", Tag::class);
     }
 
 }

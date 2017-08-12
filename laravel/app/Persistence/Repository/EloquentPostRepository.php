@@ -46,7 +46,9 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findByTag($slug, $page, $size)
     {
-        // TODO: Implement findByTag() method.
+        return $this->model->query()->where(["enabled" => true])->whereHas('tags', function($query) use($slug) {
+            return $query->where(["tag_clean" => $slug]);
+        })->paginate($size, ["*"], "page", $page);
     }
 
     /**
@@ -93,7 +95,7 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findBySlugAndPublishedDate($slug, $date)
     {
-        // TODO: Implement findBySlugAndPublishedDate() method.
+        return $this->model->query()->where(["enabled" => true, "title_clean" => $slug, "date_published" => $date])->first();
     }
 
     /**
@@ -113,7 +115,7 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findMostViewed($limit)
     {
-        // TODO: Implement findMostViewed() method.
+        return $this->model->query()->where(["enabled" => true])->orderBy("views", "desc")->limit($limit)->get();
     }
 
     /**

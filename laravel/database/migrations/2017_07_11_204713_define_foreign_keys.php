@@ -17,8 +17,9 @@ class DefineForeignKeys extends Migration
            $table->foreign("category_id")->references("id")->on("blog_category");
            $table->foreign("post_id")->references("id")->on("blog_post");
         });
-        Schema::table("blog_tag", function(Blueprint $table) {
+        Schema::table("blog_post_to_tag", function(Blueprint $table) {
             $table->foreign("post_id")->references("id")->on("blog_post");
+            $table->foreign("tag_id")->references("id")->on("blog_tag");
         });
         Schema::table("blog_comment", function(Blueprint $table) {
             $table->foreign("user_id")->references("id")->on("users");
@@ -43,8 +44,9 @@ class DefineForeignKeys extends Migration
             $table->dropForeign(["category_id"]);
             $table->dropForeign(["post_id"]);
         });
-        Schema::table("blog_tag", function(Blueprint $table) {
+        Schema::table("blog_post_to_tag", function(Blueprint $table) {
             $table->dropForeign(["post_id"]);
+            $table->dropForeign(["tag_id"]);
         });
         Schema::table("blog_comment", function(Blueprint $table) {
             $table->dropForeign(["user_id"]);

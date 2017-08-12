@@ -15,10 +15,16 @@ class CreateBlogTag extends Migration
     {
         Schema::create('blog_tag', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('post_id');
             $table->string("tag", 45);
             $table->string("tag_clean", 45)->unique();
         });
+
+        Schema::create("blog_post_to_tag", function(Blueprint $table) {
+            $table->unsignedInteger('post_id');
+            $table->unsignedInteger('tag_id');
+            $table->primary(["post_id", "tag_id"]);
+        });
+
     }
 
     /**
@@ -29,5 +35,6 @@ class CreateBlogTag extends Migration
     public function down()
     {
         Schema::dropIfExists('blog_tag');
+        Schema::dropIfExists('blog_post_to_tag');
     }
 }

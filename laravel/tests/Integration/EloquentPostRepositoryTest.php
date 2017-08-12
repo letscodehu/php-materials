@@ -12,6 +12,7 @@ namespace Tests\Integration;
 use App\Persistence\Model\Author;
 use App\Persistence\Model\Category;
 use App\Persistence\Model\Post;
+use App\Persistence\Model\Tag;
 use App\Persistence\Repository\EloquentPostRepository;
 use App\Persistence\Repository\PostRepository;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -228,13 +229,141 @@ class EloquentPostRepositoryTest extends TestCase {
     }
 
     /**
+     * @test
+     */
+    public function findByTag_should_return_enabled_posts_for_tag() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag_clean" => "included"]);
+        $this->createPostsForTags(20, true, [$tag]);
+        // WHEN
+        $actual = $this->underTest->findByTag("included", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), false);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 20);
+    }
+
+    /**
+     * @test
+     */
+    public function findByTag_should_not_return_disabled_posts_for_tag() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag_clean" => "included"]);
+        $this->createPostsForTags(20, false, [$tag]);
+        // WHEN
+        $actual = $this->underTest->findByTag("included", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), true);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function findByTag_should_not_return_other_tags_posts() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag_clean" => "not included"]);
+        $this->createPostsForTags(20, false, [$tag]);
+        // WHEN
+        $actual = $this->underTest->findByTag("included", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), true);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function findByTag_should_not_interfere_with_other_tags() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag_clean" => "included"]);
+        $notIncludedTag = factory(Tag::class)->create(["tag_clean" => "not included"]);
+        $this->createPostsForTags(20, true, [$tag, $notIncludedTag]);
+        // WHEN
+        $actual = $this->underTest->findByTag("included", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), false);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 20);
+    }
+
+    /**
+     * @test
+     */
+    public function findBySlugAndPublishedDate_should_return_enabled_post_by_date_and_slug() {
+        // GIVEN
+        $post = factory(Post::class)->make(["title_clean" => "test", "enabled" => true, "date_published" => "2017-10-11"]);
+        $author = factory(Author::class)->create();
+        $post->author()->associate($author);
+        $post->save();
+        // WHEN
+        $post = $this->underTest->findBySlugAndPublishedDate("test", "2017-10-11");
+        // THEN
+        $this->assertEquals("test", $post->title_clean);
+    }
+
+
+    /**
+     * @test
+     */
+    public function findBySlugAndPublishedDate_should_not_return_disabled_post_by_date_and_slug() {
+        // GIVEN
+        $post = factory(Post::class)->make(["title_clean" => "test", "enabled" => false, "date_published" => "2017-10-11"]);
+        $author = factory(Author::class)->create();
+        $post->author()->associate($author);
+        $post->save();
+        // WHEN
+        $post = $this->underTest->findBySlugAndPublishedDate("test", "2017-10-11");
+        // THEN
+        $this->assertNull($post);
+    }
+
+    /**
+     * @test
+     */
+    public function findMostViewed_should_return_most_viewed_enabled_posts_in_an_array() {
+        // GIVEN
+        $this->createPost(1, "last", true, 1 );
+        $this->createPost(2, "middle", true, 5);
+        $this->createPost(3, "disabled", false, 5);
+        $this->createPost(4, "first", true, 10);
+        // WHEN
+        $posts = $this->underTest->findMostViewed(3);
+        // THEN
+        $this->assertEquals(10, $posts[0]->views);
+        $this->assertEquals(5, $posts[1]->views);
+        $this->assertEquals(1, $posts[2]->views);
+    }
+
+    /**
+     * @test
+     */
+    public function findMostViewed_should_return_only_limited_posts() {
+        // GIVEN
+        $this->createPost(1, "not included", true, 0 );
+        $this->createPost(2, "last", true, 1);
+        $this->createPost(3, "middle", true, 5);
+        $this->createPost(4, "first", true, 10);
+        // WHEN
+        $posts = $this->underTest->findMostViewed(3);
+        // THEN
+        $this->assertEquals(3, count($posts));
+    }
+
+    /**
      * @param $id
      * @param $title
      * @param $enabled
      */
-    private function createPost($id, $title, $enabled)
+    private function createPost($id, $title, $enabled, $views = 1)
     {
-        $post = factory(Post::class)->make(["id" => $id, "title" => $title, "enabled" => $enabled]);
+        $post = factory(Post::class)->make(["id" => $id, "title" => $title, "enabled" => $enabled, "views" => $views]);
         $author = factory(Author::class)->create();
         $post->author()->associate($author);
         $post->save();
@@ -267,5 +396,20 @@ class EloquentPostRepositoryTest extends TestCase {
             $post->category()->saveMany($categories);
         });
     }
+
+    /**
+     * @param $tags
+     */
+    private function createPostsForTags($count, $enabled, array $tags)
+    {
+        $author = factory(Author::class)->create();
+        factory(Post::class, $count)->make(["enabled" => $enabled])->each(function (Post $post) use ($author, $tags) {
+            $post->author()->associate($author);
+            $post->save();
+            $post->tags()->saveMany($tags);
+        });
+    }
+
+
 
 }

@@ -25,7 +25,7 @@ class Post extends Model {
     }
 
     public function tags() {
-        return $this->hasMany(Tag::class, "post_id", "id");
+        return $this->belongsToMany(Tag::class, "blog_post_to_tag", "post_id", "tag_id", Post::class);
     }
 
     public function related() {
