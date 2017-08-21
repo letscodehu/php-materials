@@ -10,6 +10,7 @@ namespace App\Persistence\Repository;
 
 
 use App\Persistence\Model\Post;
+use App\Persistence\Model\Tag;
 use Illuminate\Contracts\Pagination\Paginator;
 
 class EloquentPostRepository implements PostRepository {
@@ -128,7 +129,10 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findBySearch($search, $page, $limit)
     {
-        // TODO: Implement findBySearch() method.
+        return $this->model->query()->whereHas("tags", function($query) use($search) {
+            $query->where("tag_clean", "like", "%".$search ."%")
+            ->orWhere("tag", "like", "%".$search ."%");
+        })->paginate($limit, ["*"], "page", $page);
     }
 
     /**
@@ -138,7 +142,8 @@ class EloquentPostRepository implements PostRepository {
      */
     public function save(Post $post)
     {
-        // TODO: Implement save() method.
+        $post->save();
+        return $post;
     }
 
     /**
@@ -148,6 +153,9 @@ class EloquentPostRepository implements PostRepository {
      */
     public function deleteById($id)
     {
-        // TODO: Implement deleteById() method.
+        $post = $this->findById($id);
+        if ($post != null) {
+            $post->delete();
+        }
     }
 }

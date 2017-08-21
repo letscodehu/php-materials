@@ -356,6 +356,110 @@ class EloquentPostRepositoryTest extends TestCase {
         $this->assertEquals(3, count($posts));
     }
 
+
+    /**
+     * @test
+     */
+    public function deleteById_should_remove_items_by_id()
+    {
+        // GIVEN
+        $this->createPost(1, "test", true);
+        // WHEN
+        $this->underTest->deleteById(1);
+        // THEN
+        $this->assertDatabaseMissing("blog_post", ["id" => 1]);
+    }
+
+    /**
+     * @test
+     */
+    public function deleteById_should_not_fail_when_no_id_present()
+    {
+        // GIVEN
+        // WHEN
+        $this->underTest->deleteById(1);
+        // THEN
+        $this->assertDatabaseMissing("blog_post", ["id" => 1]);
+    }
+
+
+    /**
+     * @test
+     */
+    public function save_should_create_new_entry_in_db_if_not_present() {
+        // GIVEN
+        $post = factory(Post::class)->make(["id" => 1]);
+        $author = factory(Author::class)->create();
+        $post->author()->associate($author);
+        // WHEN
+        $this->underTest->save($post);
+        // THEN
+        $this->assertDatabaseHas("blog_post", ["id" => 1]);
+    }
+
+    /**
+     * @test
+     */
+    public function save_should_update_entry_in_db_if_present() {
+        // GIVEN
+        $this->createPost(1, "test", true);
+        $post = $this->underTest->findById(1);
+        $post->title = "changed";
+        // WHEN
+        $this->underTest->save($post);
+        // THEN
+        $this->assertDatabaseHas("blog_post", ["id" => 1, "title" => "changed"]);
+    }
+
+    /**
+     * @test
+     */
+    public function save_should_return_the_persisted_entity() {
+        // GIVEN
+        $post = factory(Post::class)->make(["id" => 1]);
+        $author = factory(Author::class)->create();
+        $post->author()->associate($author);
+        // WHEN
+        $actual = $this->underTest->save($post);
+        // THEN
+        $this->assertEquals(1, $actual->id);
+        $this->assertEmpty($actual->getDirty());
+    }
+
+    /**
+     * @test
+     */
+    public function findBySearch_should_return_enabled_posts_by_matching_tag_clean() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag_clean" => "included"]);
+        $this->createPostsForTags(20, true, [$tag]);
+        // WHEN
+        $actual = $this->underTest->findBySearch("inclu", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), false);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 20);
+    }
+
+    /**
+     * @test
+     */
+    public function findBySearch_should_return_enabled_posts_by_matching_tag() {
+        // GIVEN
+        $tag = factory(Tag::class)->create(["tag" => "included"]);
+        $this->createPostsForTags(20, true, [$tag]);
+        // WHEN
+        $actual = $this->underTest->findBySearch("inclu", 1, 20);
+        // THEN
+        $this->assertEquals($actual->isEmpty(), false);
+        $this->assertEquals($actual->hasPages(), false);
+        $this->assertEquals($actual->currentPage(), 1);
+        $this->assertEquals(count($actual->items()), 20);
+    }
+
+
+
     /**
      * @param $id
      * @param $title
@@ -409,7 +513,6 @@ class EloquentPostRepositoryTest extends TestCase {
             $post->tags()->saveMany($tags);
         });
     }
-
 
 
 }
