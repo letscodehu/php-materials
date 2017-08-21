@@ -129,10 +129,17 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findBySearch($search, $page, $limit)
     {
-        return $this->model->query()->whereHas("tags", function($query) use($search) {
-            $query->where("tag_clean", "like", "%".$search ."%")
-            ->orWhere("tag", "like", "%".$search ."%");
-        })->paginate($limit, ["*"], "page", $page);
+        return $this->model->query()
+            ->where(function($query) use($search) {
+                return $query
+                    ->where("title", "like", "%$search%")
+                    ->orWhere("article", "like", "%$search%")
+                    ->orWhereHas("tags", $this->filterForTags($search))
+                    ->orWhereHas("category", $this->filterForCategories($search))
+                    ->orWhere("title_clean", "like", "%$search%");
+            })
+            ->where(["enabled" => true])
+            ->paginate($limit, ["*"], "page", $page);
     }
 
     /**
@@ -157,5 +164,29 @@ class EloquentPostRepository implements PostRepository {
         if ($post != null) {
             $post->delete();
         }
+    }
+
+    /**
+     * @param $search
+     * @return callable
+     */
+    private function filterForTags($search)
+    {
+        return function ($query) use ($search) {
+            $query->where("tag_clean", "like", "%$search%")
+                ->orWhere("tag", "like", "%$search%");
+        };
+    }
+
+    /**
+     * @param $search
+     * @return callable
+     */
+    private function filterForCategories($search)
+    {
+        return function ($query) use ($search) {
+            $query->where("name", "like", "%$search%")
+                ->orWhere("name_clean", "like", "%$search%");
+        };
     }
 }
