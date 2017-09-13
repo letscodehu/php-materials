@@ -94,9 +94,203 @@ class CachingPostRepositoryDecoratorTest extends TestCase {
         $taggedCache
             ->expects($this->once())
             ->method("put")
-            ->with($key, $expectedResult);
+            ->with($key, $expectedResult, 60);
         // WHEN
         $actual = $this->underTest->findAllPublic(1,20);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findMostViewed_should_return_cached_value()
+    {
+        $expectedResult = "cachedValue";
+        $key = "limit:20";
+        $tagname = "mostViewed";
+
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagname)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn($expectedResult);
+        // WHEN
+        $actual = $this->underTest->findMostViewed(20);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findMostViewed_should_store_cached_value()
+    {
+        // GIVEN
+        $expectedResult = "fromDB";
+        $key = "limit:20";
+        $tagname = "mostViewed";
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagname)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn(null);
+        $this->mockRepository->expects($this->once())
+            ->method("findMostViewed")
+            ->with(20)
+            ->willReturn($expectedResult);
+        $taggedCache
+            ->expects($this->once())
+            ->method("put")
+            ->with($key, $expectedResult, 60);
+        // WHEN
+        $actual = $this->underTest->findMostViewed(20);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findByCategory_should_return_cached_results()
+    {
+        $expectedResult = "cachedValue";
+        $category = "Ezekiel";
+        $page = 25;
+        $size = 17;
+        $key = "Ezekiel:25:17";
+        $tagName = "category";
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagName)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn($expectedResult);
+        // WHEN
+        $actual = $this->underTest->findByCategory($category, $page, $size);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findByCategory_should_fill_cache_with_results()
+    {
+        $expectedResult = "cachedValue";
+        $category = "Ezekiel";
+        $page = 25;
+        $size = 17;
+        $key = "Ezekiel:25:17";
+        $tagName = "category";
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagName)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn(null);
+        $this->mockRepository->expects($this->once())
+            ->method("findByCategory")
+            ->with($category, $page, $size)
+            ->willReturn($expectedResult);
+        $taggedCache
+            ->expects($this->once())
+            ->method("put")
+            ->with($key, $expectedResult, 60);
+        // WHEN
+        $actual = $this->underTest->findByCategory($category, $page, $size);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findByTag_should_return_cached_results()
+    {
+        $expectedResult = "cachedValue";
+        $tag = "Ezekiel";
+        $page = 25;
+        $size = 17;
+        $key = "Ezekiel:25:17";
+        $tagName = "tag";
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagName)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn($expectedResult);
+        // WHEN
+        $actual = $this->underTest->findByTag($tag, $page, $size);
+        // THEN
+        $this->assertEquals($expectedResult, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function findByTag_should_fill_cache_with_results()
+    {
+        $expectedResult = "cachedValue";
+        $category = "Ezekiel";
+        $page = 25;
+        $size = 17;
+        $key = "Ezekiel:25:17";
+        $tagName = "tag";
+        $taggedCache = $this->getMockBuilder(TaggedCache::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->mockCache->expects($this->once())
+            ->method("tags")
+            ->with($tagName)
+            ->willReturn($taggedCache);
+        $taggedCache
+            ->expects($this->once())
+            ->method("get")
+            ->with($key)
+            ->willReturn(null);
+        $this->mockRepository->expects($this->once())
+            ->method("findByTag")
+            ->with($category, $page, $size)
+            ->willReturn($expectedResult);
+        $taggedCache
+            ->expects($this->once())
+            ->method("put")
+            ->with($key, $expectedResult, 60);
+        // WHEN
+        $actual = $this->underTest->findByTag($category, $page, $size);
         // THEN
         $this->assertEquals($expectedResult, $actual);
     }
