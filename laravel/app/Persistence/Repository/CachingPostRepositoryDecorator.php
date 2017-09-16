@@ -3,6 +3,7 @@
 namespace App\Persistence\Repository;
 
 
+use App\Persistence\Model\Post;
 use Illuminate\Cache\Repository;
 
 class CachingPostRepositoryDecorator extends AbstractPostRepositoryDecorator {
@@ -11,6 +12,10 @@ class CachingPostRepositoryDecorator extends AbstractPostRepositoryDecorator {
     const PAGE_KEY_TEMPLATE = "page_%s:%s";
     const DEFAULT_CACHE_TTL = 60;
     const MOST_VIEWED = "mostViewed";
+    const TAG = "tag";
+    const AUTHOR = "author";
+    const CATEGORY = "category";
+    const INDIVIDUAL_POST = "individualPost";
 
     /**
      * @var PostRepository
@@ -53,7 +58,7 @@ class CachingPostRepositoryDecorator extends AbstractPostRepositoryDecorator {
 
     public function findByCategory($slug, $page, $size)
     {
-        $taggedCache = $this->cacheRepository->tags("category");
+        $taggedCache = $this->cacheRepository->tags(self::CATEGORY);
         $key = sprintf("%s:%s:%s", $slug, $page, $size);
         return $this->cacheFunctionResult($taggedCache, $key, self::DEFAULT_CACHE_TTL, function()
             use ($slug, $page, $size) {
@@ -63,12 +68,48 @@ class CachingPostRepositoryDecorator extends AbstractPostRepositoryDecorator {
 
     public function findByTag($slug, $page, $size)
     {
-        $taggedCache = $this->cacheRepository->tags("tag");
+        $taggedCache = $this->cacheRepository->tags(self::TAG);
         $key = sprintf("%s:%s:%s", $slug, $page, $size);
         return $this->cacheFunctionResult($taggedCache, $key, self::DEFAULT_CACHE_TTL, function()
         use ($slug, $page, $size) {
             return $this->postRepository->findByTag($slug, $page, $size);
         });
+    }
+
+    public function findByAuthor($slug, $page, $size)
+    {
+        $taggedCache = $this->cacheRepository->tags(self::AUTHOR);
+        $key = sprintf("%s:%s:%s", $slug, $page, $size);
+        return $this->cacheFunctionResult($taggedCache, $key, self::DEFAULT_CACHE_TTL, function()
+        use ($slug, $page, $size) {
+            return $this->postRepository->findByAuthor($slug, $page, $size);
+        });
+    }
+
+    public function findBySlugAndPublishedDate($slug, $date)
+    {
+        $taggedCache = $this->cacheRepository->tags(self::INDIVIDUAL_POST);
+        $key = sprintf("%s:%s", $slug, $date);
+        return $this->cacheFunctionResult($taggedCache, $key, self::DEFAULT_CACHE_TTL, function()
+        use ($slug, $date) {
+            return $this->postRepository->findBySlugAndPublishedDate($slug, $date);
+        });
+    }
+
+
+
+    public function deleteById($id)
+    {
+        $this->postRepository->deleteById($id);
+        $this->cacheRepository->tags([self::CATEGORY, "mostViewed", self::TAG, self::AUTHOR, "allPublicPost", self::INDIVIDUAL_POST])
+        ->flush();
+    }
+
+    public function save(Post $post)
+    {
+        $this->postRepository->save($post);
+        $this->cacheRepository->tags([self::CATEGORY, "mostViewed", self::TAG, self::AUTHOR, "allPublicPost", self::INDIVIDUAL_POST])
+            ->flush();
     }
 
     private function cacheFunctionResult(Repository $storage, $cacheKey, $ttl, callable $callable) {
