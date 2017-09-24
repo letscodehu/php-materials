@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\ViewFacade\BlogFrontendFacade;
+use App\Http\ViewFacade\DefaultBlogFrontendFacade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +25,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(BlogFrontendFacade::class, DefaultBlogFrontendFacade::class);
     }
 }
