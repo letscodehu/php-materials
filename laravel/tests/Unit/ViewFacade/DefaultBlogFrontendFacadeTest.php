@@ -206,7 +206,6 @@ class DefaultBlogFrontendFacadeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($feedUrl, $actual->getFeedUrl());
     }
 
-
     /**
      * @test
      */

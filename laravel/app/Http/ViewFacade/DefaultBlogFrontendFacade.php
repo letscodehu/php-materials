@@ -36,7 +36,6 @@ class DefaultBlogFrontendFacade implements BlogFrontendFacade
      */
     private $configRepository;
 
-
     /**
      * DefaultBlogFrontendFacade constructor.
      * @param $menuProvider MenuProvider
