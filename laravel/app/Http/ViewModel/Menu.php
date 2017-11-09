@@ -10,6 +10,21 @@ class Menu implements \Iterator
 {
 
     /**
+     * @var Link[]
+     */
+    private $content;
+
+    /**
+     * Menu constructor.
+     * @param Link[] $content
+     */
+    public function __construct(array $content)
+    {
+        $this->content = $content;
+    }
+
+
+    /**
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
@@ -63,5 +78,13 @@ class Menu implements \Iterator
     public function rewind()
     {
         // TODO: Implement rewind() method.
+    }
+
+    /**
+     * @return Link[]
+     */
+    public function getContent()
+    {
+        return $this->content;
     }
 }
