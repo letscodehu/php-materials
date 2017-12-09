@@ -20,7 +20,7 @@ class LinkFactory
      * @return Link
      */
     public function create($url, $title) {
-
+        return new Link($url, $title);
     }
 
 
