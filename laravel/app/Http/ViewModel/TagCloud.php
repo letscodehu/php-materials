@@ -8,6 +8,17 @@ namespace App\Http\ViewModel;
 class TagCloud implements \Iterator
 {
 
+    private $content;
+
+    /**
+     * TagCloud constructor.
+     * @param $content
+     */
+    public function __construct(array $content)
+    {
+        $this->content = $content;
+    }
+
     /**
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
@@ -16,7 +27,7 @@ class TagCloud implements \Iterator
      */
     public function current()
     {
-        // TODO: Implement current() method.
+        return current($this->content);
     }
 
     /**
@@ -27,7 +38,7 @@ class TagCloud implements \Iterator
      */
     public function next()
     {
-        // TODO: Implement next() method.
+        next($this->content);
     }
 
     /**
@@ -38,7 +49,7 @@ class TagCloud implements \Iterator
      */
     public function key()
     {
-        // TODO: Implement key() method.
+        return key($this->content);
     }
 
     /**
@@ -50,7 +61,7 @@ class TagCloud implements \Iterator
      */
     public function valid()
     {
-        // TODO: Implement valid() method.
+        return key($this->content) !== null;
     }
 
     /**
@@ -61,6 +72,6 @@ class TagCloud implements \Iterator
      */
     public function rewind()
     {
-        // TODO: Implement rewind() method.
+        reset($this->content);
     }
 }
