@@ -2,8 +2,16 @@
 
 namespace App\Http\ViewModel\Provider;
 
+use App\Http\ViewModel\TagCloud;
 
+/**
+ * Provides Tag related viewmodels.
+ */
 interface TagProvider
 {
-     function retrieveTagCloud();
+    /**
+     * Returns a tagcloud for the sidebar.
+     * @return TagCloud
+     */
+    function retrieveTagCloud();
 }

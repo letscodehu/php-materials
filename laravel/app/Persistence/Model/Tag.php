@@ -20,4 +20,16 @@ class Tag extends Model {
         return $this->belongsToMany(Post::class,"blog_post_to_tag", "tag_id", "post_id", Tag::class);
     }
 
+    public function getPostsCount() {
+        return $this->posts_count;
+    }
+
+    public function getSlug() {
+        return $this->slug;
+    }
+
+    public function getTitle() {
+        return $this->title;
+    }
+
 }
