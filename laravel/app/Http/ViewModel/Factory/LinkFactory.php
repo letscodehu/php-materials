@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tacsiazuma
- * Date: 2017.10.26.
- * Time: 23:15
- */
 
 namespace App\Http\ViewModel\Factory;
 

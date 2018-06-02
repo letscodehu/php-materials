@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\ViewFacade\BlogFrontendFacade;
+use App\Persistence\Model\Post;
 use Illuminate\View\Factory;
 use Symfony\Component\HttpFoundation\Request;
 
