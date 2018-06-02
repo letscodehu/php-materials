@@ -36,4 +36,21 @@ class Post extends Model {
         return $this->belongsToMany(Category::class, "blog_post_to_category", "post_id", "category_id", Post::class);
     }
 
+    public function getTitle() {
+        return $this->title;
+    }
+
+    public function getTitleClean() {
+        return $this->title_clean;
+    }
+
+    public function getArticle() {
+        return $this->article;
+    }
+
+    public function getDatePublished()
+    {
+        return $this->date_published;
+    }
+
 }

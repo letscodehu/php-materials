@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tacsiazuma
- * Date: 2017.07.22.
- * Time: 11:06
- */
 
 namespace App\Persistence\Model;
 
@@ -17,6 +11,10 @@ class Author extends Model {
 
     public function posts() {
         return $this->hasMany(Post::class, "author_id", "id");
+    }
+
+    public function getDisplayName() {
+        return $this->display_name;
     }
 
 }
