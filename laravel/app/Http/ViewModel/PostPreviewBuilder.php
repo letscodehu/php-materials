@@ -31,7 +31,7 @@ class PostPreviewBuilder
     private $excerpt;
 
     /**
-     * @var string
+     * @var Link
      */
     private $link;
 
@@ -126,7 +126,7 @@ class PostPreviewBuilder
     }
 
     /**
-     * @return string
+     * @return Link
      */
     public function getLink()
     {
@@ -134,7 +134,7 @@ class PostPreviewBuilder
     }
 
     /**
-     * @param string $link
+     * @param Link $link
      * @return PostPreviewBuilder
      */
     public function setLink($link)
