@@ -4,10 +4,14 @@ namespace App\Http\ViewModel\Provider;
 
 use App\Http\ViewModel\Factory\LinkFactory;
 use App\Http\ViewModel\Link;
+use App\Http\ViewModel\PostPreview;
+use App\Http\ViewModel\Transformer\PostPreviewTransformer;
 use App\Persistence\Model\Post;
 use App\Persistence\Repository\PostRepository;
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Pagination\Paginator;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class EloquentPostProviderTest extends TestCase
 {
@@ -32,6 +36,11 @@ class EloquentPostProviderTest extends TestCase
      */
     private $linkFactory;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $postPreviewTransformer;
+
 
     protected function setUp()
     {
@@ -41,9 +50,13 @@ class EloquentPostProviderTest extends TestCase
         $this->configRepository = $this->getMockBuilder(Repository::class)
             ->setMethods(["get"])
             ->getMockForAbstractClass();
+        $this->postPreviewTransformer = $this->getMockBuilder(PostPreviewTransformer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->linkFactory = $this->getMockBuilder(LinkFactory::class)
             ->getMock();
-        $this->underTest = new EloquentPostProvider($this->postRepository, $this->configRepository, $this->linkFactory);
+        $this->underTest = new EloquentPostProvider($this->postRepository, $this->configRepository, $this->linkFactory,
+                $this->postPreviewTransformer);
     }
 
     /**
@@ -105,6 +118,56 @@ class EloquentPostProviderTest extends TestCase
         $actual = $this->underTest->retrieveTrendingPosts();
         // THEN
         $this->assertEquals($mappedValue, $actual[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function retrievePostsForMainPage_invoke_postrepository_with_params_from_request()
+    {
+        // GIVEN
+        $request = $this->createMock(Request::class);
+        $pageNumber = 1;
+        $pageSize = 25;
+        $request->method("get")
+            ->withConsecutive(['page'], ['size'])
+            ->willReturnOnConsecutiveCalls($pageNumber, $pageSize);
+
+        $this->postRepository->expects($this->once())->method("findAllPublic")
+            ->with($pageNumber, $pageSize)
+            ->willReturn(new Paginator([], 1));
+        // WHEN
+        $this->underTest->retrievePostsForMainPage($request);
+        // THEN
+    }
+
+    /**
+     * @test
+     */
+    public function retrievePostsForMainPage_should_map_returned_elements_with_transformer()
+    {
+        // GIVEN
+        $request = $this->createMock(Request::class);
+        $pageNumber = 1;
+        $pageSize = 25;
+        $request->method("get")
+            ->withConsecutive(['page'], ['size'])
+            ->willReturnOnConsecutiveCalls($pageNumber, $pageSize);
+        $firstPost = new Post();
+        $secondPost = new Post();
+        $paginator = new Paginator([$firstPost, $secondPost], 25);
+        $firstPostPreview = PostPreview::builder()->build();
+        $secondPostPreview = PostPreview::builder()->build();
+        $this->postRepository->method('findAllPublic')
+            ->willReturn($paginator);
+        $this->postPreviewTransformer->method('transform')
+            ->withConsecutive([$firstPost], [$secondPost])
+            ->willReturnOnConsecutiveCalls($firstPostPreview, $secondPostPreview);
+        // WHEN
+        $actual = $this->underTest->retrievePostsForMainPage($request);
+        // THEN
+        $this->assertEquals($actual->items()[0], $firstPostPreview);
+        $this->assertEquals($actual->items()[1], $secondPostPreview);
     }
 
 }

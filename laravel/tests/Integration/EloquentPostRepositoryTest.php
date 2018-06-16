@@ -356,6 +356,18 @@ class EloquentPostRepositoryTest extends TestCase {
         $this->assertEquals(3, count($posts));
     }
 
+    /**
+     * @test
+     */
+    public function findMostViewed_should_return_a_regular_array()
+    {
+        // GIVEN
+        // WHEN
+        $posts = $this->underTest->findMostViewed(3);
+        // THEN
+        $this->assertFalse(is_object($posts));
+        $this->assertTrue(is_array($posts));
+    }
 
     /**
      * @test

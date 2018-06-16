@@ -28,6 +28,24 @@ return [
     |
     */
 
+
     'compiled' => realpath(storage_path('framework/views')),
+
+    "menu" => [
+        [
+            "title" => "menu.about",
+            "url" => "/about"
+        ],
+        [
+            "title" => "menu.slack",
+            "url" => "https://www.letscode.hu/slack"
+        ]
+    ],
+
+    "main_page" => [
+        "facebook_url" => "https://www.facebook.com/letscodehu/",
+        "twitter_url" => "https://twitter.com/letscodehu",
+        "feed_url" => "/feed"
+    ]
 
 ];

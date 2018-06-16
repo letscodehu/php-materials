@@ -5,6 +5,7 @@ namespace App\Http\ViewModel\Provider;
 
 use App\Http\ViewModel\Factory\LinkFactory;
 use App\Http\ViewModel\Link;
+use App\Http\ViewModel\Transformer\PostPreviewTransformer;
 use App\Persistence\Model\Post;
 use App\Persistence\Repository\PostRepository;
 use Illuminate\Contracts\Config\Repository;
@@ -28,18 +29,25 @@ class EloquentPostProvider implements PostProvider
      * @var LinkFactory
      */
     private $linkFactory;
+    /**
+     * @var PostPreviewTransformer
+     */
+    private $postPreviewTransformer;
 
     /**
      * EloquentPostProvider constructor.
      * @param PostRepository $postRepository
      * @param Repository $configRepository
      * @param LinkFactory $linkFactory
+     * @param PostPreviewTransformer $postPreviewTransformer
      */
-    public function __construct(PostRepository $postRepository, Repository $configRepository, LinkFactory $linkFactory)
+    public function __construct(PostRepository $postRepository, Repository $configRepository, LinkFactory $linkFactory,
+            PostPreviewTransformer $postPreviewTransformer)
     {
         $this->postRepository = $postRepository;
         $this->configRepository = $configRepository;
         $this->linkFactory = $linkFactory;
+        $this->postPreviewTransformer = $postPreviewTransformer;
     }
 
     /**
@@ -49,7 +57,11 @@ class EloquentPostProvider implements PostProvider
      */
     function retrievePostsForMainPage(Request $request)
     {
-        // TODO: Implement retrievePostsForMainPage() method.
+        $paginator = $this->postRepository->findAllPublic($request->get('page'), $request->get('size'));
+        $previews = collect($paginator->items())->map(function(Post $post) {
+            return $this->postPreviewTransformer->transform($post);
+        });
+        return new \Illuminate\Pagination\Paginator($previews, $request->get('size'), $request->get('page'));
     }
 
     /**

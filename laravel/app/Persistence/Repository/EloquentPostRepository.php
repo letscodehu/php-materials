@@ -116,7 +116,8 @@ class EloquentPostRepository implements PostRepository {
      */
     public function findMostViewed($limit)
     {
-        return $this->model->query()->where(["enabled" => true])->orderBy("views", "desc")->limit($limit)->get();
+        return $this->model->query()->where(["enabled" => true])->orderBy("views", "desc")->limit($limit)->get()
+            ->all();
     }
 
     /**
