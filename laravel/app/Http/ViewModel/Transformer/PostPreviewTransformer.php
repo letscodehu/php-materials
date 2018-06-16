@@ -13,14 +13,20 @@ class PostPreviewTransformer
      * @var ExcerptTransformer
      */
     private $excerptTransformer;
+    /**
+     * @var PostLinkTransformer
+     */
+    private $postLinkTransformer;
 
     /**
      * PostPreviewTransformer constructor.
      * @param ExcerptTransformer $excerptTransformer
+     * @param PostLinkTransformer $postLinkTransformer
      */
-    public function __construct(ExcerptTransformer $excerptTransformer)
+    public function __construct(ExcerptTransformer $excerptTransformer, PostLinkTransformer $postLinkTransformer)
     {
         $this->excerptTransformer = $excerptTransformer;
+        $this->postLinkTransformer = $postLinkTransformer;
     }
 
 
@@ -38,6 +44,7 @@ class PostPreviewTransformer
             ->setCategories($post->category->map(function($item) {
                 return $item->name_clean;
             })->toArray())
+            ->setLink($this->postLinkTransformer->transform($post->getTitleClean()))
             ->build();
     }
 

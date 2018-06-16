@@ -2,6 +2,7 @@
 
 namespace App\Http\ViewModel\Transformer;
 
+use App\Http\ViewModel\Link;
 use App\Persistence\Model\Author;
 use App\Persistence\Model\Category;
 use App\Persistence\Model\Post;
@@ -11,10 +12,16 @@ class PostPreviewTransformerTest extends TestCase
 {
     private $authorName = "author name";
 
+
     /**
      * @var PostPreviewTransformer
      */
     private $underTest;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $postLinkTransformer;
 
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -24,8 +31,9 @@ class PostPreviewTransformerTest extends TestCase
 
     protected function setUp()
     {
+        $this->postLinkTransformer = $this->createMock(PostLinkTransformer::class);
         $this->excerptTransformer = $this->createMock(ExcerptTransformer::class);
-        $this->underTest = new PostPreviewTransformer($this->excerptTransformer);
+        $this->underTest = new PostPreviewTransformer($this->excerptTransformer, $this->postLinkTransformer);
     }
 
     /**
@@ -112,6 +120,25 @@ class PostPreviewTransformerTest extends TestCase
         $this->assertEquals($categoryName, $actual->getCategories()[0]);
     }
 
+    /**
+     * @test
+     */
+    public function it_should_transform_post_link()
+    {
+        // GIVEN
+        $post = $this->getMockPost();
+        $slug = "some slug";
+        $post->method('getTitleClean')
+            ->willReturn($slug);
+        $link = new Link(null, null);
+        $this->postLinkTransformer->method('transform')
+            ->with($slug)
+            ->willReturn($link);
+        // WHEN
+        $actual = $this->underTest->transform($post);
+        // THEN
+        $this->assertEquals($link, $actual->getLink());
+    }
 
     private function getMockPost() {
         $post = $this->getMockBuilder(Post::class)
