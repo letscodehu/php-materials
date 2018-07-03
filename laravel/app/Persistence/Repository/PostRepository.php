@@ -11,6 +11,7 @@ namespace App\Persistence\Repository;
 
 use App\Persistence\Model\Post;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Repository for accessing Post entities with the underlying persistence mechanism.
@@ -47,7 +48,7 @@ interface PostRepository {
      * Returns all public posts using a paginator
      * @param $page int page number
      * @param $size int size of the page
-     * @return Paginator
+     * @return LengthAwarePaginator
      */
     public function findAllPublic($page, $size);
 

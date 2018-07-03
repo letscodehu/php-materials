@@ -61,7 +61,7 @@ class EloquentPostProvider implements PostProvider
         $previews = collect($paginator->items())->map(function(Post $post) {
             return $this->postPreviewTransformer->transform($post);
         });
-        return new \Illuminate\Pagination\Paginator($previews, $request->get('size'), $request->get('page'));
+        return new \Illuminate\Pagination\LengthAwarePaginator($previews, $paginator->total(), $paginator->perPage(), $paginator->currentPage());
     }
 
     /**

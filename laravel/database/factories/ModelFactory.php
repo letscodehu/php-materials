@@ -25,7 +25,7 @@ $factory->define(App\Persistence\Model\User::class, function (Faker\Generator $f
 
 $factory->define(\App\Persistence\Model\Post::class, function(\Faker\Generator $faker) {
     return [
-        'title' => $faker->title,
+        'title' => $faker->sentence,
         'article' => $faker->text(),
         'title_clean' => $faker->slug,
         'date_published' => $faker->dateTime,
