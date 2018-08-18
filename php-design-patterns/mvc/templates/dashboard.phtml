@@ -1,20 +1,19 @@
 <html>
 <head>
-<title><?php echo $title ?></title>
-
+    <title><?= $title ?></title>
 </head>
 <body>
-<table>
-<tr>
-    <th>ID</th>
-    <th>Name</th>
-</tr>
-<?php foreach($users as $user): ?>
-<tr>
-    <td><?php echo $user["id"] ?></td>
-    <td><?php echo $user["name"] ?></td>
-</tr>
-<?php endforeach ?>
-</table>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+        <?php foreach($users as $user): ?>
+            <tr>
+                <td><?= $user["id"] ?></td>
+                <td><?= $user["name"] ?></td>
+            </tr>
+        <?php endforeach ?>
+    </table>
 </body>
 </html>
