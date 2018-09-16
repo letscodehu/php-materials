@@ -136,7 +136,7 @@ class EloquentPostProviderTest extends TestCase
 
         $this->postRepository->expects($this->once())->method("findAllPublic")
             ->with($pageNumber, $pageSize)
-            ->willReturn(new LengthAwarePaginator([], 1, 25));
+            ->willReturn(new LengthAwarePaginator([], 1, 25, 1));
         // WHEN
         $this->underTest->retrievePostsForMainPage($request);
         // THEN
@@ -156,7 +156,7 @@ class EloquentPostProviderTest extends TestCase
             ->willReturnOnConsecutiveCalls($pageNumber, $pageSize);
         $firstPost = new Post();
         $secondPost = new Post();
-        $paginator = new LengthAwarePaginator([$firstPost, $secondPost],5, 25);
+        $paginator = new LengthAwarePaginator([$firstPost, $secondPost],5, 25, 1);
         $firstPostPreview = PostPreview::builder()->build();
         $secondPostPreview = PostPreview::builder()->build();
         $this->postRepository->method('findAllPublic')
@@ -186,7 +186,7 @@ class EloquentPostProviderTest extends TestCase
             ->willReturnOnConsecutiveCalls($pageNumber, $pageSize);
         $firstPost = new Post();
         $secondPost = new Post();
-        $paginator = new LengthAwarePaginator([$firstPost, $secondPost], $total, 25);
+        $paginator = new LengthAwarePaginator([$firstPost, $secondPost], $total, 25, 1);
         $this->postRepository->method('findAllPublic')
             ->willReturn($paginator);
         // WHEN
