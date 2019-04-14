@@ -1,7 +1,7 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: tacsiazuma
- * Date: 2018.12.17.
- * Time: 13:11
- */
+<!-- Footer -->
+<footer class="py-5 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Letscode.hu 2018</p>
+    </div>
+    <!-- /.container -->
+</footer>

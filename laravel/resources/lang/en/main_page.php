@@ -1,7 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tacsiazuma
- * Date: 2018.12.17.
- * Time: 13:24
- */
+
+return [
+    "title" => "Letscode.hu",
+    "subtitle" => "Home",
+    "read_more" => "Read more"
+];

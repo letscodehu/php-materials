@@ -1,7 +1,11 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: tacsiazuma
- * Date: 2018.12.17.
- * Time: 13:10
- */
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Letscode.hu</title>
+
+    <!-- Custom styles for this template -->
+    <link href="css/app.css" rel="stylesheet">
+
+</head>
