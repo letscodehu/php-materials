@@ -26,7 +26,6 @@ class MainPageControllerTest extends \PHPUnit_Framework_TestCase
         $this->underTest = new MainPageController($this->mockViewFactory, $this->mockFacade);
     }
 
-
     /**
      * @test
      */

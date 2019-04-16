@@ -8,6 +8,7 @@ use App\Http\ViewModel\MainPageModel;
 use App\Http\ViewModel\Provider\MenuProvider;
 use App\Http\ViewModel\Provider\PostProvider;
 use App\Http\ViewModel\Provider\TagProvider;
+use App\Http\ViewModel\SinglePostModel;
 use Illuminate\Contracts\Config\Repository;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -65,5 +66,10 @@ class DefaultBlogFrontendFacade implements BlogFrontendFacade
             ->setFeedUrl($this->configRepository->get(self::VIEW_MAIN_PAGE_FEED_URL))
             ->setAnalyticsKey($this->configRepository->get(self::APP_ANALYTICS_KEY))
             ->build();
+    }
+
+    function assembleSinglePostModel($year, $month, $day, $hour, $minute, $second, $postSlug)
+    {
+        return new SinglePostModel($this->menuProvider->provide());
     }
 }

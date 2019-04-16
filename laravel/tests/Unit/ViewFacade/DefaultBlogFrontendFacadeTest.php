@@ -223,4 +223,22 @@ class DefaultBlogFrontendFacadeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($analyticsKey, $actual->getAnalyticsKey());
     }
 
+    /**
+     * @test
+     */
+    public function assembleSinglePostModel_should_return_menu_field()
+    {
+        // GIVEN
+        $menu = $this->getMockBuilder(Menu::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->menuProvider->expects($this->once())
+            ->method("provide")
+            ->willReturn($menu);
+        // WHEN
+        $actual = $this->underTest->assembleSinglePostModel("2019", "04", "16", "08", "24", "00", "slug");
+        // THEN
+        $this->assertEquals($menu, $actual->getMenu());
+    }
+
 }
