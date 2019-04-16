@@ -44,7 +44,7 @@ class PostPreviewTransformer
             ->setCategories($post->category->map(function($item) {
                 return $item->name_clean;
             })->toArray())
-            ->setLink($this->postLinkTransformer->transform($post->getTitleClean()))
+            ->setLink($this->postLinkTransformer->transform($post->getTitleClean(), $post->getDatePublished()))
             ->build();
     }
 

@@ -57,8 +57,8 @@ class MainPageTest extends TestCase
         $this->assertEquals(10, $model->getContent()->perPage());
         $firstPost = $model->getContent()->items()[0];
         $lastPost = $model->getContent()->items()[9];
-        $this->assertPostPreview($firstPost, "Title 10", "title-10");
-        $this->assertPostPreview($lastPost, "Title 19", "title-19");
+        $this->assertPostPreview($firstPost, "Title 10", "/2018/08/17/16/20/00/title-10");
+        $this->assertPostPreview($lastPost, "Title 19", "/2018/08/17/16/20/00/title-19");
     }
 
     /**
@@ -79,12 +79,12 @@ class MainPageTest extends TestCase
         $this->assertEquals(15, $model->getContent()->perPage());
         $firstPost = $model->getContent()->items()[0];
         $lastPost = $model->getContent()->items()[14];
-        $this->assertPostPreview($firstPost, "Title 0", "title-0");
-        $this->assertPostPreview($lastPost, "Title 14", "title-14");
+        $this->assertPostPreview($firstPost, "Title 0", "/2018/08/17/16/20/00/title-0");
+        $this->assertPostPreview($lastPost, "Title 14", "/2018/08/17/16/20/00/title-14");
     }
 
     private function assertPostPreview(PostPreview $postPreview, $expectedTitle, $expectedUrl) {
-        $this->assertEquals("main_page.read_more", $postPreview->getLink()->getTitle());
+        $this->assertEquals("Read more", $postPreview->getLink()->getTitle());
         $this->assertEquals("John Doe", $postPreview->getAuthorName());
         $this->assertEquals(["php"], $postPreview->getCategories());
         $this->assertEquals("excerpt", $postPreview->getExcerpt());

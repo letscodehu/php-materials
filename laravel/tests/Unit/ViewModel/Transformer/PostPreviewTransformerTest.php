@@ -128,11 +128,14 @@ class PostPreviewTransformerTest extends TestCase
         // GIVEN
         $post = $this->getMockPost();
         $slug = "some slug";
+        $date = "2002-04-25 03:06:10";
         $post->method('getTitleClean')
             ->willReturn($slug);
+        $post->method('getDatePublished')
+            ->willReturn($date);
         $link = new Link(null, null);
         $this->postLinkTransformer->method('transform')
-            ->with($slug)
+            ->with($slug, $date)
             ->willReturn($link);
         // WHEN
         $actual = $this->underTest->transform($post);

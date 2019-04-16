@@ -48,8 +48,9 @@ class PostLinkTransformerTest extends TestCase
         $this->translator->method('trans')
             ->with($key)
             ->willReturn($translated);
+        $date = "2002-04-25 03:06:10";
         // WHEN
-        $actual = $this->underTest->transform("slug");
+        $actual = $this->underTest->transform("slug", $date);
         // THEN
         $this->assertEquals($translated, $actual->getTitle());
     }
@@ -57,7 +58,7 @@ class PostLinkTransformerTest extends TestCase
     /**
      * @test
      */
-    public function it_should_create_links_based_on_config_and_slug()
+    public function it_should_create_links_based_on_config_and_date_and_slug()
     {
         // GIVEN
         $key = "view.main_page.post_base_url";
@@ -66,10 +67,12 @@ class PostLinkTransformerTest extends TestCase
             ->with($key)
             ->willReturn($baseUrl);
         $slug = "slug";
+        $date = "2002-04-25 03:06:10";
+        $expected = "$baseUrl/2002/04/25/03/06/10/$slug";
         // WHEN
-        $actual = $this->underTest->transform($slug);
+        $actual = $this->underTest->transform($slug, $date);
         // THEN
-        $this->assertEquals($baseUrl.$slug, $actual->getUrl());
+        $this->assertEquals($expected, $actual->getUrl());
     }
 
 

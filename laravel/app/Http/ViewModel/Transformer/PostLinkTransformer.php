@@ -35,11 +35,13 @@ class PostLinkTransformer
     /**
      * Transform a slug into a link for the given post.
      * @param $slug
+     * @param $date
      * @return Link
      */
-    public function transform($slug) {
+    public function transform($slug, $date) {
         $baseUrl = $this->configRepository->get(self::POST_BASE_URL_KEY);
-        return new Link($baseUrl.$slug, $this->translator->trans(self::READ_MORE_KEY));
+        $transformedDate = strtr($date, "- :", "///");
+        return new Link("$baseUrl/$transformedDate/$slug", $this->translator->trans(self::READ_MORE_KEY));
     }
 
 }

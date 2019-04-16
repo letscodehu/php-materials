@@ -14,21 +14,23 @@
                 <p class="card-text">{{$post->getExcerpt()}}</p>
                 <a href="{{$post->getLink()->getUrl()}}" class="btn btn-primary">{{$post->getLink()->getTitle()}}</a>
             </div>
-            <div class="card-footer text-muted">
-                Posted on {{$post->getPublished()}} by
-                <a href="#">{{$post->getAuthorName()}}</a>
+            <div class="card-footer text-muted d-flex justify-content-between">
+                <div>
+                    Posted on {{$post->getPublished()}} by {{$post->getAuthorName()}}
+                </div>
+                <div>
+                    @foreach($post->getCategories() as $category)
+                        <span class="badge-secondary badge">{{$category}}</span>
+                    @endforeach
+                </div>
             </div>
         </div>
         @endforeach
         <!-- Pagination -->
-        <ul class="pagination justify-content-center mb-4">
-            <li class="page-item">
-                <a class="page-link" href="#">&larr; Older</a>
-            </li>
-            <li class="page-item disabled">
-                <a class="page-link" href="#">Newer &rarr;</a>
-            </li>
-        </ul>
+        <div class="d-flex justify-content-center">
+            {{$model->getContent()->render('pagination::bootstrap-4')}}
+        </div>
+
 
     </div>
 
