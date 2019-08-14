@@ -241,4 +241,21 @@ class DefaultBlogFrontendFacadeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($menu, $actual->getMenu());
     }
 
+    /**
+     * @test
+     */
+    public function assembleSinglePostModel_should_return_analyticsKey_field()
+    {
+        // GIVEN
+        $analyticsKey = "analyticsKey";
+        $this->configRepository->expects($this->at(3))
+            ->method("get")
+            ->with("app.analytics_key")
+            ->willReturn($analyticsKey);
+        // WHEN
+        $actual = $this->underTest->assembleSinglePostModel("2019", "04", "16", "08", "24", "00", "slug");
+        // THEN
+        $this->assertEquals($analyticsKey, $actual->getAnalyticsKey());
+    }
+
 }

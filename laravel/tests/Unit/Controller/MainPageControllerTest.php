@@ -21,7 +21,7 @@ class MainPageControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->mockFacade = $this->getMockBuilder(BlogFrontendFacade::class)
-            ->setMethods(["assembleMainPageModel"])
+            ->setMethods(["assembleMainPageModel", "assembleSinglePostModel"])
             ->getMock();
         $this->underTest = new MainPageController($this->mockViewFactory, $this->mockFacade);
     }

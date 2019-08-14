@@ -70,6 +70,6 @@ class DefaultBlogFrontendFacade implements BlogFrontendFacade
 
     function assembleSinglePostModel($year, $month, $day, $hour, $minute, $second, $postSlug)
     {
-        return new SinglePostModel($this->menuProvider->provide());
+        return new SinglePostModel($this->menuProvider->provide(), "", "", "");
     }
 }
