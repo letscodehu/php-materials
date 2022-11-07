@@ -1,7 +1,7 @@
 <?php
 
-class Order {
-
+class Order
+{
     private $id;
     private $total;
     private $billingCim;
@@ -64,10 +64,10 @@ class Order {
     {
         return $this->billingName;
     }
-
 }
 
-class OrderMapper {
+class OrderMapper
+{
 
     /**
      * @var PDO
@@ -83,7 +83,8 @@ class OrderMapper {
         $this->pdo = $pdo;
     }
 
-    public function find($id) {
+    public function find($id)
+    {
         $statement = $this->pdo->prepare("SELECT id, total, billing_city, billing_name, billing_address FROM orders WHERE id = :id");
         $statement->execute([
             "id" => $id
@@ -94,7 +95,8 @@ class OrderMapper {
         }
     }
 
-    public function save(Order $order) {
+    public function save(Order $order)
+    {
         if ($this->find($order->getId())) {
             return $this->update($order);
         } else {
@@ -135,7 +137,6 @@ class OrderMapper {
         $statement->execute($this->mapToParameters($newOrder));
         return $newOrder;
     }
-
 }
 
 $pdo = new PDO("mysql:hostname=localhost;dbname=training", "training", "password");

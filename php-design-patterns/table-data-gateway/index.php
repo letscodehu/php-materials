@@ -1,6 +1,7 @@
 <?php
 
-class OrderTableDataGateway {
+class OrderTableDataGateway
+{
 
     /**
      * @var PDO
@@ -16,7 +17,8 @@ class OrderTableDataGateway {
         $this->pdo = $pdo;
     }
 
-    public function find($id) {
+    public function find($id)
+    {
         $statement = $this->pdo->prepare("SELECT id, total, billing_city, billing_name, billing_address FROM orders WHERE id = :id");
         $statement->execute([
             "id" => $id
@@ -24,7 +26,8 @@ class OrderTableDataGateway {
         return $statement->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function save(array $order) {
+    public function save(array $order)
+    {
         if (array_key_exists("id", $order) && $this->find($order["id"])) {
             return $this->update($order);
         } else {
@@ -48,7 +51,6 @@ class OrderTableDataGateway {
         $statement->execute($order);
         return $order;
     }
-
 }
 
 $pdo = new PDO("mysql:hostname=localhost;dbname=training", "training", "password");

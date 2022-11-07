@@ -1,49 +1,53 @@
-<?php 
+<?php
 
-class Request {
-
+class Request
+{
     private $headers = [];
 
-    public function getHeaders() {
+    public function getHeaders()
+    {
         return $this->headers;
     }
-
 }
 
-class Response {
-
+class Response
+{
     private $headers = [];
 
-    public function addHeader($key, $value) {
+    public function addHeader($key, $value)
+    {
         $this->headers[$key] = $value;
     }
 }
 
-interface Filter {
-    function handle(Request $request, Response $response);
+interface Filter
+{
+    public function handle(Request $request, Response $response);
 }
 
-abstract class BaseFilter implements Filter {
-
+abstract class BaseFilter implements Filter
+{
     protected $next;
 
-    function setNext(Filter $next) {
+    public function setNext(Filter $next)
+    {
         $this->next = $next;
     }
 
-    protected function callNext(Request $request, Response $response) {
+    protected function callNext(Request $request, Response $response)
+    {
         if ($this->next != null) {
             $this->next->handle($request, $response);
         }
     }
-
 }
 
-class FilterChain {
-
+class FilterChain
+{
     private $filters = [];
 
-    public function addFilter(Filter $filter) {
+    public function addFilter(Filter $filter)
+    {
         $lastFilter = end($this->filters);
         if ($lastFilter != null) {
             $lastFilter->setNext($filter);
@@ -51,27 +55,28 @@ class FilterChain {
         $this->filters[] = $filter;
     }
 
-    public function doFilter(Request $request, Response $response) {
+    public function doFilter(Request $request, Response $response)
+    {
         reset($this->filters)->handle($request, $response);
     }
-
 }
 
-class SomeRequestFilter extends BaseFilter {
-
-    public function handle(Request $request, Response $response) {
+class SomeRequestFilter extends BaseFilter
+{
+    public function handle(Request $request, Response $response)
+    {
         echo 'Called the CSRF filter'. PHP_EOL;
         $requestHeaders = $request->getHeaders();
         if (array_key_exists("XSRF-TOKEN", $requestHeaders)) {
             $this->callNext($request, $response);
         }
     }
-
 }
 
-class SomeResponseFilter extends BaseFilter {
-
-    public function handle(Request $request, Response $response) {
+class SomeResponseFilter extends BaseFilter
+{
+    public function handle(Request $request, Response $response)
+    {
         echo 'Called the response filter'. PHP_EOL;
         $response->addHeader("X-REQUESTED-BY", "wat");
         $this->callNext($request, $response);

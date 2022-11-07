@@ -1,15 +1,15 @@
 <?php
 
-interface UserRepository {
-
+interface UserRepository
+{
     public function getAll();
     public function retreiveOne($id);
-
 }
 
-class SqlUserRepository implements UserRepository {
-
-    public function getAll() {
+class SqlUserRepository implements UserRepository
+{
+    public function getAll()
+    {
         sleep(1);
         return [
             [
@@ -23,69 +23,76 @@ class SqlUserRepository implements UserRepository {
         ];
     }
 
-    public function retreiveOne($id) {
+    public function retreiveOne($id)
+    {
         sleep(1);
         return [
             "id" => 2,
             "name" => "Helena B. Carter"
-        ]; 
+        ];
     }
-
 }
 
-abstract class AbstractUserRepositoryDecorator implements UserRepository {
-
+abstract class AbstractUserRepositoryDecorator implements UserRepository
+{
     protected $userRepository;
 
-    public function __construct(UserRepository $userRepository) {
+    public function __construct(UserRepository $userRepository)
+    {
         $this->userRepository = $userRepository;
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         return $this->userRepository->getAll();
     }
-    public function retreiveOne($id) {
+    public function retreiveOne($id)
+    {
         return $this->userRepository->retreiveOne($id);
     }
-
 }
 
-class Cache {
-
+class Cache
+{
     private $storage = [];
 
-    public function has($key) {
+    public function has($key)
+    {
         return array_key_exists($key, $this->storage);
     }
 
-    public function put($key, $value) {
+    public function put($key, $value)
+    {
         $this->storage[$key] = $value;
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         return $this->storage[$key];
     }
-
 }
 
-class CachingUserRepositoryDecorator extends AbstractUserRepositoryDecorator {
-
+class CachingUserRepositoryDecorator extends AbstractUserRepositoryDecorator
+{
     private $cache;
     const ALLUSERS = "allUsers";
 
-    public function __construct(UserRepository $userRepository, Cache $cache) {
+    public function __construct(UserRepository $userRepository, Cache $cache)
+    {
         parent::__construct($userRepository);
         $this->cache = $cache;
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         if (!$this->cache->has(self::ALLUSERS)) {
-            $this->cache->put(self::ALLUSERS,
-            $this->userRepository->getAll());
+            $this->cache->put(
+                self::ALLUSERS,
+                $this->userRepository->getAll()
+            );
         }
         return $this->cache->get(self::ALLUSERS);
     }
-
 }
 
 $userRepository = new CachingUserRepositoryDecorator(new SqlUserRepository(), new Cache());

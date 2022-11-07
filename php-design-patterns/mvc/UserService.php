@@ -1,8 +1,9 @@
 <?php
 
-class UserService {
-
-    public function getUsers() {
+class UserService
+{
+    public function getUsers()
+    {
         return [
                 [
                     "id" => 1,
@@ -20,5 +21,4 @@ class UserService {
                 ]
             ];
     }
-
 }

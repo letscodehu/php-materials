@@ -1,82 +1,90 @@
 <?php
 
-class Series implements SeriesInterface {
-
+class Series implements SeriesInterface
+{
     private $id;
     private $title;
     private $videos;
 
-    public function __construct($id, $title, $videos) {
+    public function __construct($id, $title, $videos)
+    {
         $this->id = $id;
         $this->title = $title;
         $this->videos = $videos;
     }
 
-    public function getVideos() {
+    public function getVideos()
+    {
         return $this->videos;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
-
 }
 
-interface SeriesInterface {
-    function getVideos();
-    function getId();
-    function getTitle();
+interface SeriesInterface
+{
+    public function getVideos();
+    public function getId();
+    public function getTitle();
 }
 
-class SeriesProxy implements SeriesInterface {
-
+class SeriesProxy implements SeriesInterface
+{
     private $db;
     private $original;
     private $videos;
 
-    public function __construct(Series $original, Database $db) {
+    public function __construct(Series $original, Database $db)
+    {
         $this->original = $original;
         $this->db = $db;
     }
 
-    public function getVideos() {
+    public function getVideos()
+    {
         if ($this->videos == null) {
-            $this->videos = array_map(function($videoRow) {
+            $this->videos = array_map(function ($videoRow) {
                 return new Video($videoRow["id"], $videoRow["title"]);
             }, $this->db->queryVideos($this->original->getId()));
         }
         return $this->videos;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->original->getId();
     }
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->original->getTitle();
     }
-
 }
 
-class Video {
-
+class Video
+{
     private $id;
     private $title;
 
-    public function __construct($id, $title) {
+    public function __construct($id, $title)
+    {
         $this->id = $id;
         $this->title = $title;
     }
-
 }
 
-class Database {
-
-    public function queryVideos($id) {
+class Database
+{
+    public function queryVideos($id)
+    {
         echo 'Querying videos '.$id.PHP_EOL;
-        switch($id) {
+        switch ($id) {
             case 1:
             $result = [
                     [
@@ -101,7 +109,8 @@ class Database {
         return $result;
     }
 
-    public function querySeries() {
+    public function querySeries()
+    {
         echo 'Querying series'.PHP_EOL;
         return [
             [
@@ -113,10 +122,10 @@ class Database {
                 "title" => "valami2"
             ]
         ];
-
     }
 
-    public function queryJoined() {
+    public function queryJoined()
+    {
         echo 'Querying joined'.PHP_EOL;
         return [
             [
@@ -144,28 +153,26 @@ class Database {
                 ]
             ]
                     ];
-
     }
-
-
 }
 
-class SeriesRepository {
-
+class SeriesRepository
+{
     private $db;
 
-    public function __construct(Database $db) {
+    public function __construct(Database $db)
+    {
         $this->db = $db;
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         $array = $this->db->querySeries();
-        $series = array_map(function($seriesRow) {
+        $series = array_map(function ($seriesRow) {
             return new SeriesProxy(new Series($seriesRow["id"], $seriesRow["title"], null), $this->db);
         }, $array);
         return $series;
     }
-
 }
 
 $repo = new SeriesRepository(new Database);

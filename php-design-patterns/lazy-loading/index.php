@@ -1,7 +1,7 @@
 <?php
 
-class User {
-
+class User
+{
     private $type;
     private $name;
     private $email;
@@ -54,10 +54,10 @@ class User {
         }
         return $this->subscriptions;
     }
-
 }
 
-function getSubscriptions() {
+function getSubscriptions()
+{
     echo "Getting subscriptions...".PHP_EOL;
     usleep(200000);
     return [];
@@ -87,4 +87,4 @@ foreach ($users as $user) {
 }
 
 $stop = microtime(true);
-echo ($stop-$start). " sec".PHP_EOL;
+echo($stop-$start). " sec".PHP_EOL;
